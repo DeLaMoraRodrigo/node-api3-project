@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-// import { useParams } from "react-router-dom";
 import axios from "axios";
 
 const PostCard = props => {
     const { post, posts, setPosts } = props;
-    // const { id } = useParams();
     const initialState = { text: ""}
     const [postEditing, setPostEditing]  = useState(false);
     const [postInputs, setPostInputs] = useState(initialState);
