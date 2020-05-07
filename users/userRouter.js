@@ -23,7 +23,7 @@ router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
 
   Posts.insert({ text, user_id })
        .then(post => {
-          res.status(201).json(newPost)
+          res.status(201).json(post)
        })
        .catch(error => {
           console.log( error )
