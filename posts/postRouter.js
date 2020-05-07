@@ -15,46 +15,58 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', validatePostId, (req, res) => {
-  if(req.post){
     res.status(200).json(req.post)
-  }
 });
 
-router.delete('/:id', (req, res) => {
-  Posts.getById(req.params.id)
-       .then(post => {
-         if(post){
-           Posts.remove(req.params.id)
-                .then(item => {
-                  if(item > 0){
-                    res.status(200)
-                  }else{
-                    res.status(404).json({ message: "Post with specified id not found" })
-                  }
-                })
-                .catch(error => {
-                  console.log( error )
-                  res.status(500).json({ message: "Error deleting post with specified id" })
-                })
-            res.json(post)
-         }else{
+router.delete('/:id', validatePostId, (req, res) => {
+  const { id } = req.params;
+
+  Posts.remove(id)
+       .then(item => {
+          if(item){
+            res.status(200).end()
+          }else{
             res.status(404).json({ message: "Post with specified id not found" })
-         }
+          }
        })
-       .catch(post => {
-        console.log( error )
-        res.status(500).json({ message: "Error deleting post with specified id" })
+       .catch(error => {
+          console.log( error )
+          res.status(500).json({ message: "Error deleting post with specified id" })
        })
 });
 
-router.put('/:id', (req, res) => {
-  
+router.put('/:id', validatePostId, (req, res) => {
+  const { id } = req.params;
+  const { text } = req.body;
+  const { user_id } = req.post;
+
+  Posts.update(id, { text, user_id })
+       .then(post => {
+          Posts.getById(id)
+               .then(updatedPost => {
+                 if(updatedPost){
+                   res.status(200).json(updatedPost)
+                 }else{
+                  res.status(404).json({ message: "Updated post can not be found" })
+                 }
+               })
+               .catch(error => {
+                console.log( error )
+                res.status(500).json({ message: "Error finding updated post with specified id" })
+               })
+       })
+       .catch(error => {
+          console.log( error )
+          res.status(500).json({ message: "There was an error updating the post with specified id" })
+       })
 });
 
 // custom middleware
 
 function validatePostId(req, res, next) {
-  Posts.getById(req.params.id)
+  const { id } = req.params;
+
+  Posts.getById(id)
        .then(post => {
           if(post){
             req.post = post;

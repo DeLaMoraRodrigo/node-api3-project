@@ -16,13 +16,14 @@ router.post('/', validateUser, (req, res) => {
 });
 
 router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
-  const userId = req.params.id;
+  const { id: user_id } = req.user;
   const { text } = req.body;
-  const newPost = { text, userId };
+  const newPost = { text, user_id };
+  console.log(req.user)
 
-  Posts.insert(newPost)
+  Posts.insert({ text, user_id })
        .then(post => {
-          res.status(201).json(post)
+          res.status(201).json(newPost)
        })
        .catch(error => {
           console.log( error )
@@ -68,7 +69,11 @@ router.delete('/:id', validateUserId, (req, res) => {
 
   Users.remove(id)
       .then(item => {
-        res.status(200).end()
+        if(item){
+          res.status(204).end()
+        }else{
+          res.status(404).json({ message: "The specified user not found"})
+        }
       })
       .catch(error => {
         console.log( error )
@@ -83,9 +88,9 @@ router.put('/:id', validateUserId, validateUser, (req, res) => {
   Users.update(id, { name })
        .then(user => {
           Users.getById(id)
-               .then(newUser => {
-                 if(newUser){
-                   res.status(200).json(newUser)
+               .then(updatedUser => {
+                 if(updatedUser){
+                   res.status(200).json(updatedUser)
                  }else{
                    res.status(404).json({ message: "Updated user can not be found" })
                  }
