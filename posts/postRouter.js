@@ -35,7 +35,7 @@ router.delete('/:id', validatePostId, (req, res) => {
        })
 });
 
-router.put('/:id', validatePostId, (req, res) => {
+router.put('/:id', validatePostId, validatePost, (req, res) => {
   const { id } = req.params;
   const { text } = req.body;
   const { user_id } = req.post;
@@ -79,6 +79,18 @@ function validatePostId(req, res, next) {
          console.log( error )
          res.status(500).json({ message: "Error retrieving post with specified id" })
        })
+}
+
+function validatePost(req, res, next) {
+  const { text } = req.body;
+ 
+  if(Object.entries(req.body).length === 0){
+    res.status(400).json({ message: 'No User Data' })
+  }else if(!text){
+    res.status(400).json({ message: 'Missing required text field' })
+  }else{
+    next();
+  }
 }
 
 module.exports = router;

@@ -5,7 +5,9 @@ const Posts = require("../posts/postDb");
 const router = express.Router();
 
 router.post('/', validateUser, (req, res) => {
-  Users.insert(req.body)
+  const { name } = req.body;
+
+  Users.insert({ name })
        .then(user => {
          res.status(201).json(user)
        })
@@ -18,7 +20,6 @@ router.post('/', validateUser, (req, res) => {
 router.post('/:id/posts', validatePost, validateUserId, (req, res) => {
   const { id: user_id } = req.user;
   const { text } = req.body;
-  const newPost = { text, user_id };
   console.log(req.user)
 
   Posts.insert({ text, user_id })
