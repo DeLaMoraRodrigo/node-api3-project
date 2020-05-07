@@ -23,7 +23,7 @@ const AddUser = props => {
                  console.log({ res })
                  setUsers([
                      ...users,
-                     addInputs
+                     res.data
                  ])
                  setAddInputs(initialState)
              })

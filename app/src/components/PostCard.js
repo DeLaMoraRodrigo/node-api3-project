@@ -8,7 +8,6 @@ const PostCard = props => {
     const initialState = { text: ""}
     const [postEditing, setPostEditing]  = useState(false);
     const [postInputs, setPostInputs] = useState(initialState);
-    const [selectedPost, setSelectedPost] = useState({});
 
     const setEditing = e => {
         e.preventDefault();

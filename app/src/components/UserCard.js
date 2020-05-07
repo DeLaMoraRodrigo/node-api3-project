@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 import UserPosts from "./UserPosts";
 
 const UserCard = props => {
     const { users, setUsers } = props;
     const { id } = useParams();
+    const { push } = useHistory();
     const initialState = {
         name: ""
     }
@@ -65,9 +66,10 @@ const UserCard = props => {
         axios.delete(`http://localhost:8000/api/users/${id}`)
              .then(res => {
                 //  console.log({ res })
-                 setUsers([
-                     ...users.filter(user => user.id !== id)
-                 ])
+                setUsers([
+                    ...users.filter(user => user.id !== id)
+                ])
+                push("/")
              })
              .catch(err => {
                  console.log({ err })
@@ -76,6 +78,7 @@ const UserCard = props => {
 
     return(
         <>
+            <button onClick={() => {push("/")}} >HOME</button>
             <div>
                 <h2>Hello, I am {user.name}</h2>
                 <button onClick={setEdit} >Edit User</button>
