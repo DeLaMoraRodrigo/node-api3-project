@@ -14,19 +14,10 @@ router.get('/', (req, res) => {
        })
 });
 
-router.get('/:id', (req, res) => {
-  Posts.getById(req.params.id)
-       .then(post => {
-         if(post){
-           res.status(200).json(post)
-         }else{
-           res.status(404).json({ message: "Post with specified id not found" })
-         }
-       })
-       .catch(error => {
-        console.log( error )
-        res.status(500).json({ message: "Error retrieving post with specified id" })
-       })
+router.get('/:id', validatePostId, (req, res) => {
+  if(req.post){
+    res.status(200).json(req.post)
+  }
 });
 
 router.delete('/:id', (req, res) => {
@@ -58,37 +49,24 @@ router.delete('/:id', (req, res) => {
 
 router.put('/:id', (req, res) => {
   
-  // Posts.getById(req.params.id)
-  //      .then(post => {
-  //         if(post){
-  //           // console.log(req.body)
-  //           let updatedPost = { ...req.body, user_id: post.user_id }
-  //           Posts.update(req.params.id, updatedPost)
-  //                .then(count => {
-  //                   if(count === 1){
-  //                     res.status(200).json(updatedPost)
-  //                   }else{
-  //                    res.status(404).json({ message: "Post with specified id not found" })
-  //                   }
-  //                 })
-  //                .catch(error => {
-  //                   console.log( error )
-  //                   res.status(500).json({ message: "Error editing post with specified id" })
-  //                })
-  //         }else{
-  //           res.status(404).json({ message: "Post with specified id not found" })
-  //         }
-  //      })
-  //      .catch(error => {
-  //         console.log( error )
-  //         res.status(500).json({ message: "Error editing post with specified id" })
-  //      })
 });
 
 // custom middleware
 
 function validatePostId(req, res, next) {
-  // do your magic!
+  Posts.getById(req.params.id)
+       .then(post => {
+          if(post){
+            req.post = post;
+            next();
+          }else{
+            res.status(404).json({ message: "Post with specified id could not be found" })
+          }
+       })
+       .catch(error => {
+         console.log( error )
+         res.status(500).json({ message: "Error retrieving post with specified id" })
+       })
 }
 
 module.exports = router;
